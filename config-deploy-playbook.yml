@@ -1,0 +1,29 @@
+---
+- hosts: all
+  become: true
+  tasks:
+  - name: install maven
+    apt:
+      pkg: maven
+      state: present
+    notify:
+    - run update
+  - name: install tomcat
+    apt:
+      pkg: tomcat8
+      state: present
+  - name: install docker
+    apt:
+      pkg: docker
+      state: present
+  - name: start docker service
+    service:
+      name: docker
+      state: started
+      enabled: true
+  - name: deploy addressbook application
+    command: sudo docker run -it -d -p 8080:8080 --name guntestapp gunmail88/gunrepo:2.0
+  handlers:
+  - name: run update
+    apt:
+      update_cache: yes
